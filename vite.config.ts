@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-    base: '/johngachara.github.io/',
+    base: '/',
     build: {
         assetsInlineLimit: 0,
     },

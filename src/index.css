@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Cyberpunk Dark Theme */
+    --background: 229 58% 10%;
+    --foreground: 0 0% 100%;
+
+    --card: 229 40% 15%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 229 40% 15%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Electric Blue Primary */
+    --primary: 190 100% 50%;
+    --primary-foreground: 229 58% 10%;
+
+    /* Cyan Secondary */
+    --secondary: 180 100% 50%;
+    --secondary-foreground: 229 58% 10%;
+
+    /* Muted darker tones */
+    --muted: 229 30% 20%;
+    --muted-foreground: 0 0% 70%;
+
+    /* Purple Accent */
+    --accent: 277 88% 62%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Success Green */
+    --success: 154 100% 50%;
+    --success-foreground: 229 58% 10%;
+
+    /* Warning Orange */
+    --warning: 33 100% 50%;
+    --warning-foreground: 229 58% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 229 40% 25%;
+    --input: 229 40% 20%;
+    --ring: 190 100% 50%;
+
+    --radius: 0.75rem;
+
+    /* Custom Design Tokens */
+    --neon-glow: 0 0 20px rgba(0, 217, 255, 0.5);
+    --glass-bg: rgba(10, 14, 39, 0.7);
+    --glass-border: rgba(0, 217, 255, 0.2);
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(190, 100%, 50%), hsl(180, 100%, 50%));
+    --gradient-accent: linear-gradient(135deg, hsl(277, 88%, 62%), hsl(190, 100%, 50%));
+    --gradient-cyber: linear-gradient(180deg, hsl(229, 58%, 10%), hsl(229, 40%, 15%));
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 229 40% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 190 100% 50%;
+    --sidebar-primary-foreground: 229 58% 10%;
+    --sidebar-accent: 229 30% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 229 40% 25%;
+    --sidebar-ring: 190 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground overflow-x-hidden;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Glassmorphism Utilities */
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .neon-glow {
+    text-shadow: var(--neon-glow);
+  }
+
+  .glow-border {
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--secondary));
+}

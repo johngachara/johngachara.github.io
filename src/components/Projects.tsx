@@ -58,7 +58,73 @@ const Projects = () => {
       tech: ["Python", "Node.js", "GPT-4.1 Mini", "Web Search APIs", "PDF Generation", "React"],
       color: "from-success to-warning",
       glowColor: "rgba(0, 255, 136, 0.5)"
-    }
+    },
+      {
+          title: "Crop Quality Assessment AI",
+          subtitle: "AI-Powered Agricultural Analysis",
+          tagline: "Intelligent produce quality evaluation for farming e-commerce platform",
+          description: "A multimodal AI prototype that analyzes agricultural produce images to classify quality and generate ratings, designed to streamline quality control for farming e-commerce marketplaces.",
+          features: [
+              {
+                  name: "Advanced Crop Analysis",
+                  details: "Identifies crop types and provides comprehensive quality assessments with 100-point rating system"
+              },
+              {
+                  name: "Multi-Criteria Evaluation",
+                  details: "Analyzes appearance (25%), texture (20%), ripeness (25%), defects (20%), and commercial viability (10%)"
+              },
+              {
+                  name: "Quality Classification",
+                  details: "6-tier grading system from EXCELLENT (90-100) to BAD (0-19) with detailed feature analysis"
+              },
+              {
+                  name: "Interactive Shell Interface",
+                  details: "User-friendly CLI for continuous image analysis with real-time feedback and recommendations"
+              }
+          ],
+          impact: [
+              "Automated quality assessment replaces manual inspection",
+              "Standardized grading system ensures marketplace consistency",
+              "Detailed feature analysis (color, texture, ripeness, defects) guides pricing",
+              "Commercial viability scoring indicates shelf life and market readiness"
+          ],
+          tech: ["Python", "OpenAI SDK", "GitHub Models API", "GPT-4 Mini", "Image Processing", "CLI"],
+          color: "from-green-500 to-emerald-600",
+          glowColor: "rgba(34, 197, 94, 0.5)"
+      },
+      {
+          title: "Alltech MCP Integration",
+          subtitle: "AI-Powered Business Intelligence",
+          tagline: "Real-time database insights through natural language queries",
+          description: "A Model Context Protocol integration that connects GPT-4.1 Mini directly to the business transactions database, enabling AI-powered analysis and automatic business health reports without manual intervention.",
+          features: [
+              {
+                  name: "Direct Database Connection",
+                  details: "GPT-4.1 Mini queries live transaction data to generate real-time business insights"
+              },
+              {
+                  name: "Transaction Analytics",
+                  details: "Automated daily and weekly summaries with sales patterns and stock analysis"
+              },
+              {
+                  name: "Natural Language Queries",
+                  details: "Ask questions in plain English - 'What products need restocking?' or 'Summarize today's revenue'"
+              },
+              {
+                  name: "Smart Inventory Alerts",
+                  details: "Identifies low-stock products based on recent sales patterns and velocity"
+              }
+          ],
+          impact: [
+              "Eliminates manual report generation for business health monitoring",
+              "No expensive analytics dashboards or external platforms needed",
+              "Real-time performance analysis with minimal server load",
+              "Foundation for automated WhatsApp business reports"
+          ],
+          tech: ["GPT-4.1 Mini", "OpenAI SDK", "Model Context Protocol", "Database Integration", "Node.js", "SQL"],
+          color: "from-blue-500 to-cyan-600",
+          glowColor: "rgba(59, 130, 246, 0.5)"
+      }
   ];
 
   return (

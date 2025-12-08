@@ -13,7 +13,7 @@ const Index = () => {
       <StarField />
       
       {/* Main Content */}
-      <div className="relative z-10">
+      <div >
         <Navigation />
         <Hero />
         <Projects />

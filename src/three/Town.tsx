@@ -92,13 +92,13 @@ export function Town() {
   useFrame((state) => {
     const aspect = size.width / Math.max(1, size.height);
     // on phones the labels shrink to numbers, so the models can take more of the width
-    const fit = Math.max(4.6, (size.width < 640 ? 7 : 8) / Math.min(aspect, 1.6));
+    const fit = Math.max(4.6, (size.width < 640 ? 7.8 : 8) / Math.min(aspect, 1.6));
     const dist = fit / (2 * Math.tan(THREE.MathUtils.degToRad(28 / 2)));
     const az = Math.PI / 4 + (reducedMotion ? 0 : state.pointer.x * 0.08);
     const el = 0.62 + (reducedMotion ? 0 : state.pointer.y * 0.04);
     camera.position.set(Math.sin(az) * Math.cos(el) * dist, Math.sin(el) * dist, Math.cos(az) * Math.cos(el) * dist);
     camera.lookAt(lookAt);
-  });
+  }, -1); // before drei's Html, so labels track this frame's camera, not the last one
 
   return (
     <group>

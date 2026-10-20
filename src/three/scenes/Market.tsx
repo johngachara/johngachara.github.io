@@ -1,10 +1,10 @@
 import * as THREE from "three";
-import { useMemo, useRef, type MutableRefObject } from "react";
+import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Line } from "@react-three/drei";
 import { Block, Cyl, Figure } from "../kit";
 import { rand, tones, type V3 } from "../materials";
-import { Exploded } from "../Exploded";
+import { Exploded, type SceneProps } from "../Exploded";
 import { reducedMotion } from "../motion";
 
 const SHELVES = [0.12, 0.5, 0.88, 1.26];
@@ -117,10 +117,11 @@ export function MarketPlace() {
   );
 }
 
-export function MarketScene({ progress }: { progress: MutableRefObject<number> }) {
+export function MarketScene({ progress, forced }: SceneProps) {
   return (
     <Exploded
       progress={progress}
+      forced={forced}
       size={[4, 3]}
       shaft={[1.45, 0.55]}
       placeHeight={1.5}

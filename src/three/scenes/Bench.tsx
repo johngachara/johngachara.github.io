@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import { useRef, type MutableRefObject } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Ball, Block, Cyl, Figure } from "../kit";
 import { tones } from "../materials";
-import { Exploded } from "../Exploded";
+import { Exploded, type SceneProps } from "../Exploded";
 import { reducedMotion } from "../motion";
 
 const TOP = 0.78;
@@ -96,10 +96,11 @@ export function BenchPlace() {
   );
 }
 
-export function BenchScene({ progress }: { progress: MutableRefObject<number> }) {
+export function BenchScene({ progress, forced }: SceneProps) {
   return (
     <Exploded
       progress={progress}
+      forced={forced}
       size={[4, 3]}
       shaft={[1.05, -0.42]}
       placeHeight={1.6}

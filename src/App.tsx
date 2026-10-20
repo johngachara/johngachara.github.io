@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Stage } from "./three/Stage";
 import { Project } from "./components/Project";
+import { ProjectDock } from "./components/ProjectDock";
 import { alsoBuilt, instruments, projects, record } from "./content";
 
 const Town = lazy(() => import("./three/Town").then((m) => ({ default: m.Town })));
@@ -130,6 +131,8 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      <ProjectDock />
 
       <footer className="foot">
         <span>© {new Date().getFullYear()} John Gachara · Nairobi</span>

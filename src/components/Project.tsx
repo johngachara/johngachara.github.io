@@ -1,6 +1,7 @@
-import { lazy, Suspense, useMemo, useRef, type ComponentType, type MutableRefObject, type RefObject } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ComponentType, type RefObject } from "react";
 import { Stage } from "../three/Stage";
-import { useScrollProgress } from "../three/motion";
+import { smooth, useScrollProgress } from "../three/motion";
+import type { SceneProps } from "../three/Exploded";
 import type { Project as P } from "../content";
 
 const scenes = {
@@ -8,7 +9,7 @@ const scenes = {
   aisle: lazy(() => import("../three/scenes/Market").then((m) => ({ default: m.MarketScene }))),
   bench: lazy(() => import("../three/scenes/Bench").then((m) => ({ default: m.BenchScene }))),
   server: lazy(() => import("../three/scenes/Rack").then((m) => ({ default: m.RackScene }))),
-} satisfies Record<P["id"], ComponentType<{ progress: MutableRefObject<number> }>>;
+} satisfies Record<P["id"], ComponentType<SceneProps>>;
 
 const stacked = () => window.matchMedia("(max-width: 900px)").matches;
 
@@ -22,19 +23,53 @@ export function Project({ project, index }: { project: P; index: number }) {
   );
   const mode = useMemo(() => (): "section" | "element" => (stacked() ? "element" : "section"), []);
   const progress = useScrollProgress(track, mode);
+  const forced = useRef<number | null>(null);
+  const [open, setOpen] = useState(false);
   const Scene = scenes[project.id];
+
+  // The button mirrors what scroll is doing until it is pressed; leaving the
+  // project hands control back to scroll.
+  useEffect(() => {
+    const sync = () => {
+      if (forced.current === null) setOpen(smooth(0.12, 0.62, progress.current) > 0.5);
+    };
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) {
+        forced.current = null;
+        sync();
+      }
+    });
+    if (article.current) io.observe(article.current);
+    window.addEventListener("scroll", sync, { passive: true });
+    sync();
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", sync);
+    };
+  }, [progress]);
+
+  const toggle = () => {
+    forced.current = open ? 0 : 1;
+    setOpen(!open);
+  };
 
   return (
     <article ref={article} className="project" id={`work-${project.id}`} aria-labelledby={`t-${project.id}`}>
       <div className="project-model" ref={stage}>
         <Stage label={project.sceneLabel}>
           <Suspense fallback={null}>
-            <Scene progress={progress} />
+            <Scene progress={progress} forced={forced} />
           </Suspense>
         </Stage>
-        <p className="project-hint" aria-hidden="true">
-          Scroll to take it apart
-        </p>
+        <div className="project-controls">
+          <p className="project-hint" aria-hidden="true">
+            <span className="hint-wide">Scroll to take it apart · drag to turn</span>
+            <span className="hint-narrow">Drag to turn · tap a label</span>
+          </p>
+          <button type="button" className="toggle" aria-pressed={open} onClick={toggle}>
+            {open ? "Reassemble" : "Take apart"}
+          </button>
+        </div>
       </div>
 
       <div className="project-text">

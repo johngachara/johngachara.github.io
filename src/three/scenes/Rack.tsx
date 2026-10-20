@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import { useRef, type MutableRefObject } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Ball, Block, Cyl, Figure } from "../kit";
 import { tones } from "../materials";
-import { Exploded } from "../Exploded";
+import { Exploded, type SceneProps } from "../Exploded";
 import { reducedMotion } from "../motion";
 
 const GATE_X = 1.0;
@@ -98,10 +98,11 @@ export function RackPlace() {
   );
 }
 
-export function RackScene({ progress }: { progress: MutableRefObject<number> }) {
+export function RackScene({ progress, forced }: SceneProps) {
   return (
     <Exploded
       progress={progress}
+      forced={forced}
       size={[4, 3]}
       shaft={[GATE_X, 0.15]}
       placeHeight={2.1}

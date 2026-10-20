@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import { useRef, type MutableRefObject } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Block, Cyl, Figure } from "../kit";
 import { rand, tones } from "../materials";
-import { Exploded } from "../Exploded";
+import { Exploded, type SceneProps } from "../Exploded";
 import { reducedMotion } from "../motion";
 
 /** A receipt that keeps printing. */
@@ -78,10 +78,11 @@ export function ShopPlace() {
   );
 }
 
-export function ShopScene({ progress }: { progress: MutableRefObject<number> }) {
+export function ShopScene({ progress, forced }: SceneProps) {
   return (
     <Exploded
       progress={progress}
+      forced={forced}
       size={[4, 3]}
       shaft={[0.85, 0.42]}
       placeHeight={1.7}

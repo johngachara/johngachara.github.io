@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { useMemo, useRef, type MutableRefObject, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Html, Line } from "@react-three/drei";
 import { Block } from "./kit";
@@ -24,16 +24,25 @@ type Props = {
   /** x/z of the shaft data travels down when exploded */
   shaft: [number, number];
   progress: MutableRefObject<number>;
+  /** when set, holds the model open (1) or closed (0) regardless of scroll */
+  forced: MutableRefObject<number | null>;
+};
+
+export type SceneProps = {
+  progress: MutableRefObject<number>;
+  forced: MutableRefObject<number | null>;
 };
 
 const SLAB = 0.14;
 const GAP = 1.25;
+const SPIN_LIMIT = 0.9;
+const SPIN_SETTLE_MS = 2500;
 
 /**
  * A place standing on its own plinth. Scroll and the plinth splits into the
  * layers of software underneath it, each labelled like a drawing.
  */
-export function Exploded({ place, placeLabel, placeHeight, layers, size, shaft, progress }: Props) {
+export function Exploded({ place, placeLabel, placeHeight, layers, size, shaft, progress, forced }: Props) {
   const [W, D] = size;
   const root = useRef<THREE.Group>(null);
   const slabs = useRef<(THREE.Group | null)[]>([]);
@@ -42,15 +51,46 @@ export function Exploded({ place, placeLabel, placeHeight, layers, size, shaft, 
   const packets = useRef<(THREE.Mesh | null)[]>([]);
   const shaftLine = useRef<THREE.Group>(null);
   const eased = useRef(0);
-  const { camera, size: view } = useThree();
+  const { camera, size: view, gl } = useThree();
   const lookAt = useMemo(() => new THREE.Vector3(), []);
+  const spin = useRef({ value: 0, target: 0, dragging: false, x: 0, released: 0 });
+
+  // Drag sideways to turn the model. The canvas only claims horizontal drags
+  // (touch-action: pan-y), so vertical swipes still scroll the page.
+  useEffect(() => {
+    const el = gl.domElement;
+    const s = spin.current;
+    const down = (e: PointerEvent) => {
+      s.dragging = true;
+      s.x = e.clientX;
+    };
+    const move = (e: PointerEvent) => {
+      if (!s.dragging) return;
+      s.target = THREE.MathUtils.clamp(s.target + (e.clientX - s.x) * 0.008, -SPIN_LIMIT, SPIN_LIMIT);
+      s.x = e.clientX;
+    };
+    const up = () => {
+      s.dragging = false;
+      s.released = performance.now();
+    };
+    el.addEventListener("pointerdown", down);
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+    return () => {
+      el.removeEventListener("pointerdown", down);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      el.removeEventListener("pointercancel", up);
+    };
+  }, [gl]);
 
   const n = layers.length;
   const restY = (i: number) => -(i + 1) * SLAB;
   const openY = (i: number) => -(i + 1) * GAP;
 
   useFrame((state, dt) => {
-    const target = smooth(0.12, 0.62, progress.current);
+    const target = forced.current ?? smooth(0.12, 0.62, progress.current);
     eased.current = reducedMotion ? target : THREE.MathUtils.damp(eased.current, target, 5, dt);
     const e = eased.current;
 
@@ -63,12 +103,20 @@ export function Exploded({ place, placeLabel, placeHeight, layers, size, shaft, 
       if (!el) return;
       const o = i === 0 ? 1 : smooth(0.45 + i * 0.08, 0.8 + i * 0.05, e);
       el.style.opacity = String(o);
+      el.style.pointerEvents = o > 0.5 ? "auto" : "none";
     });
 
     // keep the whole stack centred in frame as it grows downwards
     const bottom = THREE.MathUtils.lerp(restY(n - 1), openY(n - 1), e) - SLAB;
     const mid = (placeHeight + bottom) / 2;
-    if (root.current) root.current.position.y = -mid;
+    // after a drag, the model drifts back to the drawing angle the labels are laid out for
+    const sp = spin.current;
+    if (!sp.dragging && performance.now() - sp.released > SPIN_SETTLE_MS) sp.target = 0;
+    sp.value = reducedMotion ? sp.target : THREE.MathUtils.damp(sp.value, sp.target, sp.dragging ? 14 : 3, dt);
+    if (root.current) {
+      root.current.position.y = -mid;
+      root.current.rotation.y = sp.value;
+    }
 
     const span = placeHeight - bottom;
     // Frame in pixels: the model's on-screen width plus its labels must fit the
@@ -156,7 +204,10 @@ export function Exploded({ place, placeLabel, placeHeight, layers, size, shaft, 
   );
 }
 
-/** A drawing label pinned to a slab's right-hand corner; the leader is drawn in CSS. */
+/**
+ * A drawing label pinned to a slab's right-hand corner; the leader is drawn in
+ * CSS. On phones only the name shows, and tapping it reveals the detail.
+ */
 function Callout({
   p,
   name,
@@ -168,11 +219,19 @@ function Callout({
   detail: string;
   setRef: (el: HTMLDivElement | null) => void;
 }) {
+  const [open, setOpen] = useState(false);
   return (
-    <Html position={p} zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
-      <div ref={setRef} className="callout" style={{ opacity: 0 }}>
-        <span className="callout-name">{name}</span>
-        <span className="callout-detail">{detail}</span>
+    <Html position={p} zIndexRange={[5, 0]}>
+      <div ref={setRef} className="callout-wrap" style={{ opacity: 0, pointerEvents: "none" }}>
+        <button
+          type="button"
+          className={`callout${open ? " is-open" : ""}`}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+        >
+          <span className="callout-name">{name}</span>
+          <span className="callout-detail">{detail}</span>
+        </button>
       </div>
     </Html>
   );

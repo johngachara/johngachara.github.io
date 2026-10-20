@@ -258,6 +258,12 @@ a {
 
 /* labels on the exploded models */
 .callout {
+  appearance: none;
+  border: 0;
+  background: none;
+  margin: 0;
+  text-align: left;
+  cursor: default;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -336,16 +342,57 @@ a {
   min-height: 520px;
   overflow: hidden;
 }
-.project-hint {
+.project-model canvas {
+  touch-action: pan-y;
+  cursor: grab;
+}
+.project-model canvas:active {
+  cursor: grabbing;
+}
+.project-controls {
   position: absolute;
   left: 0;
-  bottom: 20px;
+  right: 0;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  pointer-events: none;
+}
+.project-hint {
   color: var(--ink-3);
   font-size: 10.5px;
 }
 .project-hint::before {
   content: "↓ ";
   color: var(--signal);
+}
+.hint-narrow {
+  display: none;
+}
+.toggle {
+  pointer-events: auto;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+  color: var(--ink);
+  font: 500 11px var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.toggle:hover,
+.toggle[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* bottom bar of projects, phones and tablets only */
+.dock {
+  display: none;
 }
 .project-text {
   padding: 22vh 0 34vh;
@@ -661,8 +708,86 @@ a {
     font-size: 10px;
     padding-left: 26px;
   }
+  .callout {
+    cursor: pointer;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .callout::before {
+    top: calc(10px + 0.7em);
+  }
+  .callout-name {
+    text-decoration: underline dotted var(--ink-3);
+    text-underline-offset: 3px;
+  }
   .callout-detail {
     display: none;
+  }
+  .callout.is-open .callout-detail {
+    display: block;
+    max-width: 112px;
+    background: var(--bg);
+    margin-top: 2px;
+  }
+  .callout.is-open .callout-name {
+    color: var(--signal);
+    text-decoration: none;
+  }
+  .hint-wide {
+    display: none;
+  }
+  .hint-narrow {
+    display: inline;
+  }
+  .project-controls {
+    bottom: 8px;
+  }
+  .dock {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid var(--ink);
+    transform: translateY(110%);
+    transition: transform 0.3s ease;
+  }
+  .dock.is-shown {
+    transform: none;
+  }
+  .dock ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .dock a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 56px;
+    text-decoration: none;
+    font: 500 10.5px var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-top: 2px solid transparent;
+    margin-top: -1px;
+  }
+  .dock a[aria-current="true"] {
+    color: var(--ink);
+    border-top-color: var(--signal);
+  }
+  .dock .num {
+    font-size: 11px;
   }
   .callout::before {
     width: 22px;

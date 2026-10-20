@@ -1,26 +1,29 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
-export default defineConfig(({ mode }) => ({
-    server: {
-        host: "::",
-        port: 8080,
-    },
-    base: '/',
-    build: {
-        assetsInlineLimit: 0,
-        rollupOptions: {
-            output: {
-                manualChunks: undefined,
-            },
+export default defineConfig({
+  server: {
+    host: "::",
+    port: 8080,
+  },
+  base: "/",
+  build: {
+    // three.js alone is ~700 kB minified; it is split out and cached separately
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ["three"],
+          r3f: ["@react-three/fiber", "@react-three/drei"],
         },
+      },
     },
-    plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
-    resolve: {
-        alias: {
-            "@": path.resolve(__dirname, "./src"),
-        },
+  },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
     },
-}));
+  },
+});

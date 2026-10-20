@@ -71,9 +71,14 @@ export function Exploded({ place, placeLabel, placeHeight, layers, size, shaft, 
     if (root.current) root.current.position.y = -mid;
 
     const span = placeHeight - bottom;
-    const aspect = view.width / Math.max(1, view.height);
-    // portrait screens show label names only, so they need less room beside the model
-    const fit = Math.max(span * 1.45, (Math.max(W, D) * (aspect < 0.9 ? 1.8 : 2.35)) / Math.min(aspect, 1.4));
+    // Frame in pixels: the model's on-screen width plus its labels must fit the
+    // canvas, and the pair is centred. Stacked layouts show label names only.
+    const labelPx = window.innerWidth <= 900 ? 120 : 235;
+    const modelUnits = (W + D) * 0.74;
+    const roomPx = Math.max(120, view.width - labelPx - 28);
+    const fit = Math.max(span * 1.4, (modelUnits * view.height) / roomPx);
+    const pxPerUnit = view.height / fit;
+    const shift = labelPx / 2 / pxPerUnit;
     const dist = fit / (2 * Math.tan(THREE.MathUtils.degToRad(28 / 2)));
     const px = reducedMotion ? 0 : state.pointer.x * 0.06;
     const py = reducedMotion ? 0 : state.pointer.y * 0.04;
@@ -84,7 +89,8 @@ export function Exploded({ place, placeLabel, placeHeight, layers, size, shaft, 
       Math.sin(el) * dist,
       Math.cos(az) * Math.cos(el) * dist,
     );
-    lookAt.set(aspect < 0.9 ? W * 0.33 : W * 0.36, 0, 0);
+    // move the target along the camera's right-hand direction so the model sits left of centre
+    lookAt.set(Math.cos(Math.PI / 4) * shift, 0, -Math.sin(Math.PI / 4) * shift);
     camera.lookAt(lookAt);
 
     // data falls through the open layers
@@ -97,7 +103,7 @@ export function Exploded({ place, placeLabel, placeHeight, layers, size, shaft, 
       m.position.y = THREE.MathUtils.lerp(0.05, bottom + SLAB, k);
       m.scale.setScalar(visible * 0.09);
     });
-  });
+  }, -1); // before drei's Html, so labels track this frame's camera, not the last one
 
 
   return (

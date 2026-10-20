@@ -115,6 +115,9 @@ a {
   border-bottom: 1px solid var(--rule);
 }
 .top a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   text-decoration: none;
   color: var(--ink-2);
 }
@@ -128,7 +131,6 @@ a {
 }
 .top nav a {
   position: relative;
-  padding: 6px 0;
 }
 .top nav a:hover {
   color: var(--ink);
@@ -138,7 +140,7 @@ a {
   position: absolute;
   left: 0;
   right: 100%;
-  bottom: 0;
+  bottom: 10px;
   border-bottom: 1px solid var(--signal);
   transition: right 0.25s ease;
 }
@@ -215,7 +217,7 @@ a {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  padding-left: 30px;
+  padding: 14px 0 14px 30px;
   position: relative;
   transform: translateY(-50%);
   white-space: nowrap;
@@ -235,7 +237,7 @@ a {
   transition: width 0.2s ease, border-color 0.2s ease;
 }
 .lot-label.left {
-  padding: 0 30px 0 0;
+  padding: 14px 30px 14px 0;
   flex-direction: row-reverse;
   transform: translate(-100%, -50%);
 }
@@ -656,7 +658,7 @@ a {
     max-width: none;
   }
   .callout {
-    font-size: 9.5px;
+    font-size: 10px;
     padding-left: 26px;
   }
   .callout-detail {
@@ -667,12 +669,44 @@ a {
   }
 }
 
+/* phones on their side: never let a model be taller than the screen */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 540px) {
+  .hero-model,
+  .project-model {
+    height: calc(100svh - var(--bar) - 8px);
+    min-height: 0;
+  }
+}
+
 @media (max-width: 640px) {
   .top nav a:nth-child(2) {
     display: none;
   }
   .lot-title {
     display: none;
+  }
+  /* lead with the models so the first screen on a phone shows them */
+  .hero-model {
+    overflow: hidden;
+    order: -1;
+    height: 38svh;
+    min-height: 220px;
+    margin: 0 calc(var(--gutter) * -1);
+  }
+  .hero-text {
+    padding-top: 12px;
+  }
+  .hero .eyebrow {
+    margin-bottom: 16px;
+  }
+  .lot-label {
+    padding-left: 22px;
+  }
+  .lot-label.left {
+    padding-right: 22px;
+  }
+  .lot-label::before {
+    width: 16px;
   }
   .hero-legend {
     display: grid;
